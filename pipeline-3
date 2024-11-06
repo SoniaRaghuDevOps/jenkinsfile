@@ -1,0 +1,35 @@
+pipeline{
+agent any
+	stages{
+	     stage('Git code checkout'){
+	        steps{
+	             git branch: 'main', url: 'https://github.com/Cloud-Gen-DevOps-Projects/Docker-Integration.git'
+	        }
+	     }
+	     stage('Docker Image Build'){
+	        steps{
+	             sh "docker build -t netflix ."
+	            }
+	     }
+	     stage('Scanning Docker Image'){
+	        steps{
+	             sh "trivy image netflix:latest"
+	        }
+	     }
+	     stage('pushing Docker Image tag and push into Docker Hub'){
+	        steps{
+	        	script{
+	        		withDockerRegistry(credentialsId: 'docker') {
+	        			sh "docker tag netflix sonia943/netflix:latest"
+	        			sh "docker push sonia943/netflix:latest"
+	        		}
+	        	}
+	        }
+	     }
+	     stage('Netflix Container Application Create'){
+	        steps{
+	             sh "docker run -itd --name netflix-app -p 4000:80 netflix:latest"
+	        }
+	     }
+	}
+}	
