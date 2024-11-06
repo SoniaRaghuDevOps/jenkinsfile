@@ -1,0 +1,39 @@
+yum install java-17 -y
+java --version
+yum install git fontconfig -y
+sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
+sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
+yum install jenkins -y
+systemctl start jenkins
+systemctl status jenkins
+systemctl enable jenkins
+
+cat /var/lib/jenkins/secrets/initialAdminPassword
+
+
+
+yum-config-manager --disable docker-ce-stable
+yum install docker -y
+docker --version
+docker version
+systemctl start docker
+systemctl enable docker
+systemctl status docker --no-pager
+
+
+cat << EOF | sudo tee -a /etc/yum.repos.d/trivy.repo
+[trivy]
+name=Trivy repository
+baseurl=https://aquasecurity.github.io/trivy-repo/rpm/releases/\$basearch/
+gpgcheck=1
+enabled=1
+gpgkey=https://aquasecurity.github.io/trivy-repo/rpm/public.key
+EOF
+sudo yum -y update
+sudo yum -y install trivy
+trivy --version
+
+
+wget https://dlcdn.apache.org/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz
+tar -xvf apache-maven-3.9.9-bin.tar.gz
+mv apache-maven-3.9.9 maven
